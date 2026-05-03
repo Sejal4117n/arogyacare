@@ -6,7 +6,16 @@ from __future__ import annotations
 import os
 from typing import Optional
 
-from flask import Blueprint, Flask, jsonify, redirect, render_template, request, url_for
+from flask import (
+    Blueprint,
+    Flask,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
+from werkzeug.security import generate_password_hash
 
 from analytics_data import (
     all_power_bi_payload,
@@ -20,12 +29,24 @@ from analytics_data import (
 )
 from auth import auth_bp, current_user, role_required
 from blood_bank_views import init_blood_bank_views
-from doctor_notifications import mark_notifications_read, poll_for_doctor
-from booking_views import admin_appointments_full_rows, doctor_today_schedule_rows, init_booking_views
+from doctor_notifications import (
+    mark_notifications_read,
+    poll_for_doctor,
+)
+from booking_views import (
+    admin_appointments_full_rows,
+    doctor_today_schedule_rows,
+    init_booking_views,
+)
 from config import config_by_name
-from dash_data import admin_dashboard_payload, doctor_dashboard_payload, patient_dashboard_payload
+from create_users import SEED_USERS
+from dash_data import (
+    admin_dashboard_payload,
+    doctor_dashboard_payload,
+    patient_dashboard_payload,
+)
 from diagnosis_views import init_diagnosis
-from models import Feedback, db
+from models import Feedback, User, db
 
 
 admin_bp = Blueprint("admin", __name__)
@@ -37,14 +58,20 @@ patient_bp = Blueprint("patient", __name__)
 @role_required("admin")
 def admin_appointments_board():
     rows = admin_appointments_full_rows()
-    return render_template("admin/appointments.html", rows=rows)
+    return render_template(
+        "admin/appointments.html",
+        rows=rows,
+    )
 
 
 @admin_bp.route("/dashboard")
 @role_required("admin")
 def admin_dashboard():
     payload = admin_dashboard_payload()
-    return render_template("admin/dashboard.html", **payload)
+    return render_template(
+        "admin/dashboard.html",
+        **payload,
+    )
 
 
 @admin_bp.route("/feedback")
@@ -53,6 +80,7 @@ def admin_feedback_page():
     rows = Feedback.query.order_by(
         Feedback.created_at.desc()
     ).all()
+
     return render_template(
         "admin/feedback.html",
         rows=rows,
@@ -62,17 +90,22 @@ def admin_feedback_page():
 @admin_bp.route("/")
 def admin_home():
     return redirect(
-        url_for("admin.admin_dashboard")
+        url_for(
+            "admin.admin_dashboard"
+        )
     )
 
 
 @doctor_bp.route("/dashboard")
 @role_required("doctor")
 def doctor_dashboard():
+
     me = current_user()
+
     payload = doctor_dashboard_payload(
         me.id if me else -1
     )
+
     return render_template(
         "doctor/dashboard.html",
         **payload,
@@ -82,17 +115,22 @@ def doctor_dashboard():
 @doctor_bp.route("/")
 def doctor_home():
     return redirect(
-        url_for("doctor.doctor_dashboard")
+        url_for(
+            "doctor.doctor_dashboard"
+        )
     )
 
 
 @patient_bp.route("/dashboard")
 @role_required("patient")
 def patient_dashboard():
+
     me = current_user()
+
     payload = patient_dashboard_payload(
         me.id if me else -1
     )
+
     return render_template(
         "patient/dashboard.html",
         **payload,
@@ -102,7 +140,9 @@ def patient_dashboard():
 @patient_bp.route("/")
 def patient_home():
     return redirect(
-        url_for("patient.patient_dashboard")
+        url_for(
+            "patient.patient_dashboard"
+        )
     )
 
 
@@ -136,9 +176,41 @@ def create_app(
 
     db.init_app(app)
 
-    # IMPORTANT FOR RENDER
+    # Render database setup
     with app.app_context():
+
         db.create_all()
+
+        # auto seed users
+        for user_data in SEED_USERS:
+
+            existing = (
+                User.query.filter_by(
+                    email=user_data["email"]
+                ).first()
+            )
+
+            if existing:
+                continue
+
+            user = User(
+                name=user_data["name"],
+                email=user_data["email"],
+                password=generate_password_hash(
+                    user_data["password"]
+                ),
+                role=user_data["role"],
+                department=user_data.get(
+                    "department"
+                ),
+                date_of_birth=user_data.get(
+                    "date_of_birth"
+                ),
+            )
+
+            db.session.add(user)
+
+        db.session.commit()
 
     init_booking_views(app)
     init_blood_bank_views(app)
@@ -183,6 +255,7 @@ def create_app(
             or rating < 1
             or rating > 5
         ):
+
             return jsonify(
                 {
                     "ok": False,
@@ -206,15 +279,20 @@ def create_app(
             }
         )
 
-    app.register_blueprint(auth_bp)
+    app.register_blueprint(
+        auth_bp
+    )
+
     app.register_blueprint(
         admin_bp,
         url_prefix="/admin",
     )
+
     app.register_blueprint(
         doctor_bp,
         url_prefix="/doctor",
     )
+
     app.register_blueprint(
         patient_bp,
         url_prefix="/patient",
@@ -222,6 +300,7 @@ def create_app(
 
     @app.context_processor
     def inject_auth_nav():
+
         return {
             "current_auth_user": current_user()
         }
@@ -233,6 +312,7 @@ app = create_app()
 
 
 if __name__ == "__main__":
+
     app.run(
         host="0.0.0.0",
         port=int(
