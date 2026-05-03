@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}All appointments · Admin{% endblock %}
+{% block body_class %}dash-premium{% endblock %}
+{% block head_extra %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="px-1 pb-5">
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+    <div>
+      <p class="dash-kicker mb-0">Master ledger</p>
+      <h1 class="dash-title mb-2">Appointment registry</h1>
+      <p class="dash-sub mb-0">Unified MySQL-backed schedule across every clinician and corridor.</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a class="btn btn-outline-secondary rounded-pill fw-semibold px-4" href="{{ url_for('admin.admin_dashboard') }}">Command KPIs</a>
+      <span class="dash-chip align-self-center">{{ rows|length }} records</span>
+    </div>
+  </div>
+
+  <div class="dash-panel p-0 overflow-hidden rounded-5">
+    <div class="table-responsive">
+      <table class="table dash-table mb-0 align-middle">
+        <thead class="sticky-top bg-white bg-opacity-90">
+          <tr>
+            <th class="ps-4 py-4">Patient</th>
+            <th>Doctor</th>
+            <th>Department</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Priority</th>
+            <th>ER</th>
+            <th>Status</th>
+            <th class="pe-4">Symptoms excerpt</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if not rows %}
+          <tr>
+            <td colspan="9" class="text-center text-muted py-5 fw-semibold">No appointments persisted yet · patient bookings will hydrate this grid.</td>
+          </tr>
+          {% endif %}
+          {% for row in rows %}
+          {% set a = row.appointment %}
+          {% set sx = (a.symptoms or '') %}
+          <tr {% if a.emergency %}style="border-left:4px solid var(--bs-danger);"{% endif %}>
+            <td class="ps-4 fw-bold">{{ row.patient_name }}</td>
+            <td>{{ row.doctor_name }}</td>
+            <td>{{ a.department }}</td>
+            <td>{{ a.appointment_date.strftime('%d %b %Y') }}</td>
+            <td>{{ a.appointment_time.strftime('%H:%M') }}</td>
+            <td><span class="badge rounded-pill text-bg-dark bg-opacity-10 border">{{ a.priority_score }}</span></td>
+            <td>{% if a.emergency %}<span class="text-danger fw-black">●</span>{% else %}—{% endif %}</td>
+            <td><span class="badge text-bg-light border">{{ a.status }}</span></td>
+            <td class="pe-4 text-muted fw-semibold small">{{ sx[:120] }}{% if sx|length > 120 %}…{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

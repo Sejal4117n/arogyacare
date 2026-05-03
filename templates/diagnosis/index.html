@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+{% block title %}Diagnosis hub · ArogyaCare{% endblock %}
+{% block body_class %}diag-shell{% endblock %}
+{% block head_extra %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/diagnosis.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="diag-hero diag-glass diag-reveal px-3 py-4 px-md-5 py-md-5 mb-5">
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+    <div>
+      <p class="diag-kicker mb-2"><i class="bi bi-heart-pulse me-2"></i>Self-check tools · not the same as a clinic visit</p>
+      <h1 class="diag-title mb-2">Risk checklists</h1>
+      <p class="diag-lead mb-0">Enter your numbers below. We add up simple rules on this website and save a summary for your care team.</p>
+    </div>
+    <a class="btn btn-outline-light diag-back rounded-pill px-4" href="{{ url_for('patient.patient_dashboard') }}"><i class="bi bi-arrow-left me-2"></i>Back to dashboard</a>
+  </div>
+</div>
+
+<div class="row g-4 diag-card-grid mb-5">
+  <div class="col-md-6 col-xl-4">
+    <button type="button" class="diag-card text-start border-0 w-100 diag-reveal" data-diag-modal="heart" aria-haspopup="dialog">
+      <div class="diag-card-icon diag-card-icon--rose"><i class="bi bi-activity"></i></div>
+      <h2 class="h5 fw-black mb-2">Heart risk</h2>
+      <p class="small text-muted mb-0 lh-base">Standard heart-health style measures (same field names often used for teaching datasets).</p>
+    </button>
+  </div>
+  <div class="col-md-6 col-xl-4">
+    <button type="button" class="diag-card text-start border-0 w-100 diag-reveal diag-reveal-delay-1" data-diag-modal="diabetes">
+      <div class="diag-card-icon diag-card-icon--amber"><i class="bi bi-droplet-half"></i></div>
+      <h2 class="h5 fw-black mb-2">Diabetes risk</h2>
+      <p class="small text-muted mb-0 lh-base">Sugar, blood pressure, BMI, skin fold, insulin, and family pedigree score.</p>
+    </button>
+  </div>
+  <div class="col-md-6 col-xl-4">
+    <button type="button" class="diag-card text-start border-0 w-100 diag-reveal diag-reveal-delay-2" data-diag-modal="thyroid">
+      <div class="diag-card-icon diag-card-icon--teal"><i class="bi bi-speedometer2"></i></div>
+      <h2 class="h5 fw-black mb-2">Thyroid screen</h2>
+      <p class="small text-muted mb-0 lh-base">TSH plus a few symptom flags.</p>
+    </button>
+  </div>
+</div>
+
+<div class="alert diag-footnote diag-glass border-0 diag-reveal" role="note">
+  <i class="bi bi-info-circle me-2 text-info"></i>
+  Results are rough guides only · always speak with your doctor before you change treatment or medicines.
+</div>
+
+<!-- Modal: Heart -->
+<div class="modal fade" id="modalHeart" tabindex="-1" aria-labelledby="modalHeartTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+    <div class="modal-content diag-modal">
+      <div class="modal-header border-0 pb-0">
+        <div>
+          <span class="badge rounded-pill diag-badge-soft mb-2">Heart risk</span>
+          <h2 class="modal-title h5 fw-black" id="modalHeartTitle">Heart health inputs</h2>
+          <p class="small text-muted mb-0">All fields below are required. Use lab and vitals numbers you already have.</p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body pt-2">
+        <form id="formHeart">
+          <div class="row g-3">
+            <div class="col-sm-6">
+              <label class="form-label small fw-semibold" for="heartAge">Age</label>
+              <input type="number" min="1" max="120" step="1" class="form-control diag-input" id="heartAge" name="age" required>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label small fw-semibold" for="heartSex">Sex (0 female, 1 male)</label>
+              <select class="form-select diag-input" id="heartSex" name="sex" required>
+                <option value="">Choose…</option>
+                <option value="0">0 — Female</option>
+                <option value="1">1 — Male</option>
+              </select>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label small fw-semibold" for="heartCp">Chest pain type (cp) 0–3</label>
+              <input type="number" min="0" max="3" step="1" class="form-control diag-input" id="heartCp" name="cp" required>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label small fw-semibold" for="heartBp">Resting blood pressure — trestbps (mmHg)</label>
+              <input type="number" min="50" max="250" step="1" class="form-control diag-input" id="heartBp" name="trestbps" required>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label small fw-semibold" for="heartChol">Cholesterol — chol (mg/dL)</label>
+              <input type="number" min="80" max="600" step="1" class="form-control diag-input" id="heartChol" name="chol" required>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label small fw-semibold" for="heartFbs">Fasting sugar over 120 — fbs (1 yes, 0 no)</label>
+              <select class="form-select diag-input" id="heartFbs" name="fbs" required>
+                <option value="">Choose…</option>
+                <option value="0">0 — No</option>
+                <option value="1">1 — Yes</option>
+              </select>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label small fw-semibold" for="heartRestecg">Resting ECG — restecg (0–2)</label>
+              <input type="number" min="0" max="2" step="1" class="form-control diag-input" id="heartRestecg" name="restecg" required>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label small fw-semibold" for="heartThalach">Max heart rate — thalach</label>
+              <input type="number" min="60" max="220" step="1" class="form-control diag-input" id="heartThalach" name="thalach" required>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label small fw-semibold" for="heartExang">Exercise angina — exang (1 yes, 0 no)</label>
+              <select class="form-select diag-input" id="heartExang" name="exang" required>
+                <option value="">Choose…</option>
+                <option value="0">0 — No</option>
+                <option value="1">1 — Yes</option>
+              </select>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label small fw-semibold" for="heartOldpeak">ST depression — oldpeak</label>
+              <input type="number" min="0" max="10" step="0.1" class="form-control diag-input" id="heartOldpeak" name="oldpeak" required>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label small fw-semibold" for="heartSlope">ST slope — slope (0–2)</label>
+              <input type="number" min="0" max="2" step="1" class="form-control diag-input" id="heartSlope" name="slope" required>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label small fw-semibold" for="heartCa">Major vessels seen on fluoroscopy — ca (0–3)</label>
+              <input type="number" min="0" max="3" step="1" class="form-control diag-input" id="heartCa" name="ca" required>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label small fw-semibold" for="heartThal">Thalassemia — thal (3 normal, 6 fixed, 7 reversible)</label>
+              <select class="form-select diag-input" id="heartThal" name="thal" required>
+                <option value="">Choose…</option>
+                <option value="3">3 — Normal</option>
+                <option value="6">6 — Fixed defect</option>
+                <option value="7">7 — Reversible defect</option>
+              </select>
+            </div>
+          </div>
+          <div class="diag-result alert d-none mt-3" role="status" aria-live="polite"></div>
+          <button type="submit" class="btn btn-primary fw-bold rounded-pill px-4 w-100 mt-3">Save result</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Diabetes -->
+<div class="modal fade" id="modalDiabetes" tabindex="-1" aria-labelledby="modalDiabetesTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content diag-modal">
+      <div class="modal-header border-0 pb-0">
+        <div>
+          <span class="badge rounded-pill diag-badge-soft diag-badge-soft--amber mb-2">Diabetes risk</span>
+          <h2 class="modal-title h5 fw-black" id="modalDiabetesTitle">Diabetes-style inputs</h2>
+          <p class="small text-muted mb-0">Names match classic diabetes datasets. All fields required.</p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body pt-2">
+        <form id="formDiabetes">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold" for="diaAge">Age</label>
+            <input type="number" min="1" max="120" step="1" class="form-control diag-input" id="diaAge" name="age" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold" for="diaGlucose">Glucose (mg/dL)</label>
+            <input type="number" min="0" max="500" step="1" class="form-control diag-input" id="diaGlucose" name="glucose" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold" for="diaBp">Blood pressure (diastolic, mmHg)</label>
+            <input type="number" min="30" max="150" step="1" class="form-control diag-input" id="diaBp" name="bp" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold" for="diaSkin">Skin fold thickness</label>
+            <input type="number" min="0" max="100" step="1" class="form-control diag-input" id="diaSkin" name="skinthickness" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold" for="diaInsulin">Insulin (2-hour serum mu U/ml)</label>
+            <input type="number" min="0" max="900" step="1" class="form-control diag-input" id="diaInsulin" name="insulin" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold" for="diaBmi">BMI</label>
+            <input type="number" min="10" max="70" step="0.1" class="form-control diag-input" id="diaBmi" name="bmi" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold" for="diaDpf">Diabetes pedigree function (dpf)</label>
+            <input type="number" min="0" max="3" step="0.001" class="form-control diag-input" id="diaDpf" name="dpf" required>
+          </div>
+          <div class="diag-result alert d-none" role="status" aria-live="polite"></div>
+          <button type="submit" class="btn btn-primary fw-bold rounded-pill px-4 w-100">Save result</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Thyroid -->
+<div class="modal fade" id="modalThyroid" tabindex="-1" aria-labelledby="modalThyroidTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content diag-modal">
+      <div class="modal-header border-0 pb-0">
+        <div>
+          <span class="badge rounded-pill diag-badge-soft diag-badge-soft--teal mb-2">Thyroid screen</span>
+          <h2 class="modal-title h5 fw-black" id="modalThyroidTitle">Hormone and symptoms</h2>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body pt-2">
+        <form id="formThyroid">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold" for="thyTsh">TSH (µIU/mL)</label>
+            <input type="number" min="0" max="100" step="any" class="form-control diag-input" id="thyTsh" name="tsh" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold d-block">Weight gain</label>
+            <div class="btn-group" role="group">
+              <input type="radio" class="btn-check" name="weight_gain" id="thyWgN" value="no" autocomplete="off" checked>
+              <label class="btn btn-outline-secondary rounded-start-pill" for="thyWgN">No</label>
+              <input type="radio" class="btn-check" name="weight_gain" id="thyWgY" value="yes" autocomplete="off">
+              <label class="btn btn-outline-secondary rounded-end-pill" for="thyWgY">Yes</label>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold d-block">Hair loss</label>
+            <div class="btn-group" role="group">
+              <input type="radio" class="btn-check" name="hair_loss" id="thyHairN" value="no" autocomplete="off" checked>
+              <label class="btn btn-outline-secondary rounded-start-pill" for="thyHairN">No</label>
+              <input type="radio" class="btn-check" name="hair_loss" id="thyHairY" value="yes" autocomplete="off">
+              <label class="btn btn-outline-secondary rounded-end-pill" for="thyHairY">Yes</label>
+            </div>
+          </div>
+          <div class="mb-4">
+            <label class="form-label small fw-semibold d-block">Fatigue</label>
+            <div class="btn-group" role="group">
+              <input type="radio" class="btn-check" name="fatigue" id="thyFatN" value="no" autocomplete="off" checked>
+              <label class="btn btn-outline-secondary rounded-start-pill" for="thyFatN">No</label>
+              <input type="radio" class="btn-check" name="fatigue" id="thyFatY" value="yes" autocomplete="off">
+              <label class="btn btn-outline-secondary rounded-end-pill" for="thyFatY">Yes</label>
+            </div>
+          </div>
+          <div class="diag-result alert d-none" role="status" aria-live="polite"></div>
+          <button type="submit" class="btn btn-primary fw-bold rounded-pill px-4 w-100">Save result</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="application/json" id="diagSubmitUrl">{{ url_for('diagnosis.diagnosis_submit')|tojson }}</script>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/diagnosis.js') }}"></script>
+{% endblock %}

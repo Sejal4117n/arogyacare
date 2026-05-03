@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Blood Request · ArogyaCare{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4 p-md-5">
+        <h1 class="h4 mb-2">Blood Request</h1>
+        <p class="text-muted mb-4">Request blood from available stock.</p>
+        <form method="post">
+          <div class="mb-3">
+            <label class="form-label">Patient Name</label>
+            <input type="text" class="form-control" name="patient_name" required minlength="2">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Blood Group Needed</label>
+            <select class="form-select" name="blood_group_needed" required>
+              <option value="">Select</option>
+              {% for bg in blood_groups %}
+              <option value="{{ bg }}">{{ bg }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-4">
+            <label class="form-label">Units Needed</label>
+            <input type="number" class="form-control" name="units_needed" required min="1">
+          </div>
+          <button class="btn btn-primary">Check and Request</button>
+          <a class="btn btn-outline-secondary ms-2" href="{{ url_for('blood_donation') }}">Back to donation</a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

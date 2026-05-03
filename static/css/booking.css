@@ -1,0 +1,192 @@
+/* Patient booking — glass flow, ambient gradient */
+:root {
+  --b-blue: #0ea5e9;
+  --b-emerald: #10b981;
+  --b-ink: #0f172a;
+}
+
+body.booking-premium {
+  min-height: 100vh;
+  background:
+    radial-gradient(900px 500px at 8% -5%, rgba(14, 165, 233, 0.2), transparent 55%),
+    radial-gradient(700px 450px at 94% -2%, rgba(16, 185, 129, 0.16), transparent 48%),
+    linear-gradient(#f8fafc, #eef2ff 52%, #ecfdf5);
+}
+
+body.booking-premium nav.navbar.bg-primary {
+  background: linear-gradient(95deg, rgba(2, 6, 23, 0.92), rgba(14, 116, 144, 0.88)) !important;
+}
+
+.book-shell {
+  max-width: 1180px;
+  margin-inline: auto;
+}
+
+.book-hero-cards {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+
+@media (min-width: 992px) {
+  .book-hero-cards {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 1.85rem;
+  }
+}
+
+.book-illus {
+  position: relative;
+  border-radius: 28px;
+  padding: clamp(1.75rem, 3vw, 2.75rem);
+  background:
+    radial-gradient(circle at 30% -10%, rgba(56, 189, 248, 0.35), transparent 55%),
+    linear-gradient(150deg, #020617, #082f49 62%, #020617);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.12),
+    0 40px 110px rgba(0, 0, 0, 0.32);
+  color: rgba(226, 232, 240, 0.9);
+  overflow: hidden;
+  animation: book-card-rise 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.book-illus::after {
+  content: "";
+  position: absolute;
+  inset: auto -35% -50% auto;
+  width: 360px;
+  height: 360px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.22), transparent 68%);
+  pointer-events: none;
+  animation: book-pulse-soft 14s ease-in-out infinite alternate;
+}
+
+@keyframes book-pulse-soft {
+  from {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.6;
+  }
+  to {
+    transform: translate(-12px, 8px) scale(1.05);
+    opacity: 1;
+  }
+}
+
+@keyframes book-card-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+.book-illus-inner {
+  position: relative;
+  z-index: 2;
+}
+
+.book-kicker {
+  font-weight: 800;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(224, 242, 254, 0.76);
+}
+
+.book-illus-title {
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  font-size: clamp(1.85rem, 3.2vw, 2.5rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+}
+
+.book-illus-text {
+  color: rgba(226, 232, 240, 0.75);
+  line-height: 1.75;
+}
+
+.book-form-card {
+  border-radius: 28px;
+  padding: clamp(1.5rem, 3vw, 2.35rem);
+  background: rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  box-shadow:
+    0 4px 1px rgba(255, 255, 255, 0.5) inset,
+    0 36px 100px rgba(15, 23, 42, 0.1);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  animation: book-card-rise 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
+}
+
+.book-form-card .form-floating label,
+.book-form-card .form-label {
+  font-weight: 650;
+}
+
+.book-form-card .form-control,
+.book-form-card .form-select {
+  border-radius: 16px !important;
+  border-color: rgba(148, 163, 184, 0.45);
+  transition:
+    transform 0.28s ease,
+    box-shadow 0.35s ease;
+}
+
+.book-form-card .form-control:focus,
+.book-form-card .form-select:focus {
+  border-color: rgba(14, 165, 233, 0.55);
+  box-shadow:
+    0 0 0 0.2rem rgba(14, 165, 233, 0.12),
+    0 20px 50px rgba(14, 165, 233, 0.1);
+}
+
+.flatpickr-input {
+  cursor: pointer;
+}
+
+.er-glass {
+  border-radius: 16px;
+  border: 1px solid rgba(244, 63, 94, 0.28);
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.book-submit {
+  border: none;
+  border-radius: 999px;
+  padding: 0.85rem 1.65rem;
+  font-weight: 900;
+  width: 100%;
+  letter-spacing: 0.02em;
+  background-image: linear-gradient(118deg, #e0f2fe 3%, #a7f3d0);
+  color: #082f49;
+  box-shadow:
+    0 14px 48px rgba(14, 165, 233, 0.32),
+    0 14px 40px rgba(16, 185, 129, 0.2);
+  transition:
+    transform 0.42s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.42s ease;
+}
+
+.book-submit:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 18px 58px rgba(14, 165, 233, 0.38),
+    0 18px 50px rgba(16, 185, 129, 0.22);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .book-illus,
+  .book-form-card {
+    animation: none !important;
+  }
+
+  .book-illus::after {
+    animation: none !important;
+  }
+
+  .book-submit:hover {
+    transform: none;
+  }
+}

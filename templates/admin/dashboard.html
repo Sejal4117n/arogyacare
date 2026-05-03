@@ -1,0 +1,357 @@
+{% extends "base.html" %}
+{% block title %}Admin Command · ArogyaCare{% endblock %}
+{% block body_class %}dash-premium{% endblock %}
+{% block head_extra %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="dash-head px-1">
+  <div>
+    <p class="dash-kicker mb-0">Administration cockpit</p>
+    <h1 class="dash-title">System-wide visibility</h1>
+    <p class="dash-sub">Live KPIs aggregated from registered users and clinical tables — zero synthetic seeds.</p>
+  </div>
+  <div class="d-flex align-items-center gap-2 flex-wrap">
+    <a class="btn btn-sm btn-primary rounded-pill px-3" href="{{ url_for('admin.admin_analytics_dashboard') }}">Open Analytics</a>
+    <a class="btn btn-sm btn-outline-primary rounded-pill px-3" href="{{ url_for('admin.admin_feedback_page') }}">View Feedback</a>
+    <span class="dash-chip align-self-center"><i class="bi bi-activity me-2 text-primary"></i>Role: administrator</span>
+  </div>
+</div>
+
+<div class="row g-3 g-xl-4 mb-4">
+  <div class="col-6 col-md-4 col-xl-2">
+    <article class="dash-stat" data-aos="fade-up">
+      <div class="dash-stat-icon text-primary"><i class="bi bi-people-fill"></i></div>
+      <div class="dash-stat-label">Total patients</div>
+      <div class="dash-stat-value"><span data-dash-counter data-target="{{ total_patients }}">0</span></div>
+      <div class="dash-stat-trend text-muted small">Profiles with role · patient</div>
+    </article>
+  </div>
+  <div class="col-6 col-md-4 col-xl-2">
+    <article class="dash-stat" data-aos="fade-up" data-aos-delay="40">
+      <div class="dash-stat-icon text-success"><i class="bi bi-person-badge-fill"></i></div>
+      <div class="dash-stat-label">Total doctors</div>
+      <div class="dash-stat-value"><span data-dash-counter data-target="{{ total_doctors }}">0</span></div>
+      <div class="dash-stat-trend text-muted small">Clinician accounts</div>
+    </article>
+  </div>
+  <div class="col-6 col-md-4 col-xl-2">
+    <article class="dash-stat" data-aos="fade-up" data-aos-delay="80">
+      <div class="dash-stat-icon text-primary"><i class="bi bi-calendar2-check-fill"></i></div>
+      <div class="dash-stat-label">Today’s appointments</div>
+      <div class="dash-stat-value"><span data-dash-counter data-target="{{ appointments_today }}">0</span></div>
+      <div class="dash-stat-trend text-muted small">Rolling solar day · server TZ</div>
+    </article>
+  </div>
+  <div class="col-6 col-md-4 col-xl-2">
+    <article class="dash-stat" data-aos="fade-up" data-aos-delay="120">
+      <div class="dash-stat-icon text-danger-emphasis"><i class="bi bi-exclamation-diamond-fill"></i></div>
+      <div class="dash-stat-label">Critical cases</div>
+      <div class="dash-stat-value"><span data-dash-counter data-target="{{ critical_cases }}">0</span></div>
+      <div class="dash-stat-trend text-muted small">Open · flagged critical</div>
+    </article>
+  </div>
+  <div class="col-6 col-md-4 col-xl-2">
+    <article class="dash-stat" data-aos="fade-up" data-aos-delay="160">
+      <div class="dash-stat-icon text-success"><i class="bi bi-droplet-half"></i></div>
+      <div class="dash-stat-label">Donor availability</div>
+      <div class="dash-stat-value"><span data-dash-counter data-target="{{ donor_units_total }}">0</span></div>
+      <div class="dash-stat-trend text-muted small">Units summed</div>
+    </article>
+  </div>
+  <div class="col-6 col-md-4 col-xl-2">
+    <article class="dash-stat" data-aos="fade-up" data-aos-delay="200">
+      <div class="dash-stat-icon text-primary"><i class="bi bi-cpu-fill"></i></div>
+      <div class="dash-stat-label">Predictions (7d)</div>
+      <div class="dash-stat-value"><span data-dash-counter data-target="{{ predictions_week_count }}">0</span></div>
+      <div class="dash-stat-trend text-muted small">Inference rows</div>
+    </article>
+  </div>
+  <div class="col-6 col-md-4 col-xl-2">
+    <article class="dash-stat" data-aos="fade-up" data-aos-delay="220">
+      <div class="dash-stat-icon text-danger"><i class="bi bi-person-heart"></i></div>
+      <div class="dash-stat-label">Total donors</div>
+      <div class="dash-stat-value"><span data-dash-counter data-target="{{ total_blood_donors }}">0</span></div>
+      <div class="dash-stat-trend text-muted small">From blood donor records</div>
+    </article>
+  </div>
+</div>
+
+<div class="row g-3 g-xl-4 mb-4">
+  <div class="col-lg-7">
+    <div class="dash-panel h-100" data-aos="fade-up">
+      <div class="dash-panel-title text-dark">
+        <span>Throughput · appointments</span>
+        <span class="badge text-bg-light border rounded-pill">7-day ribbon</span>
+      </div>
+      <div class="dash-canvas-wrap">
+        <canvas id="chartAppts" height="240"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="dash-panel h-100" data-aos="fade-up" data-aos-delay="60">
+      <div class="dash-panel-title text-dark">
+        <span>Prediction analytics</span>
+        <span class="badge text-bg-light border rounded-pill">14-day lattice</span>
+      </div>
+      <div class="dash-canvas-wrap">
+        <canvas id="chartPred" height="240"></canvas>
+      </div>
+      <div class="row g-2 mt-1">
+        <div class="col-sm-6">
+          <div class="rounded-4 border bg-white bg-opacity-50 p-3 h-100">
+            <div class="small fw-bold text-muted text-uppercase">Avg confidence</div>
+            {% if avg_prediction_confidence is not none %}
+            <div class="fs-4 fw-black text-dark-emphasis mb-0">
+              <span data-dash-counter data-target="{{ avg_prediction_confidence }}" data-decimals="3">0</span>
+            </div>
+            {% else %}
+            <div class="fs-4 fw-black text-muted mb-0">—</div>
+            {% endif %}
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="rounded-4 border bg-white bg-opacity-50 p-3 h-100">
+            <div class="small fw-bold text-muted text-uppercase">Week volume</div>
+            <div class="fs-4 fw-black text-dark-emphasis mb-0">{{ predictions_week_count }}</div>
+            <div class="small text-muted">Logged predictions</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 g-xl-4 pb-5">
+  <div class="col-lg-7">
+    <div class="dash-panel" data-aos="fade-up">
+      <div class="dash-panel-title text-dark">
+        <span>Donor availability</span>
+        <span class="badge rounded-pill text-bg-success bg-opacity-10 text-success border">{{ donor_supply_rows|length }} groups</span>
+      </div>
+      {% if donor_supply_rows %}
+      <div class="table-responsive">
+        <table class="table table-borderless dash-table mb-0">
+          <thead>
+            <tr>
+              <th>Blood group</th>
+              <th class="text-end">Units</th>
+              <th class="text-end">Recorded</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for d in donor_supply_rows %}
+            <tr>
+              <td class="fw-bold">{{ d.blood_group }}</td>
+              <td class="text-end"><span data-dash-counter data-target="{{ d.units_available }}">0</span></td>
+              <td class="text-muted text-end">
+                {{ d.last_updated.strftime("%d %b %Y %H:%M") if d.last_updated else "-" }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="dash-empty py-5">
+        <i class="bi bi-droplet-slash"></i>
+        <p class="mb-0">No blood stock records yet.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="dash-panel h-100" data-aos="fade-up" data-aos-delay="60">
+      <div class="dash-panel-title text-dark">
+        <span>Operational narrative</span>
+      </div>
+      <ul class="list-unstyled mb-0 small lh-lg text-secondary fw-semibold">
+        <li class="mb-2"><i class="bi bi-check2-circle text-success me-2"></i>Appointment trend updates automatically from live records.</li>
+        <li class="mb-2"><i class="bi bi-check2-circle text-success me-2"></i>Risk trend shows the latest diagnosis activity.</li>
+        <li class="mb-0"><i class="bi bi-diagram-3 text-primary me-2"></i>Open Analytics for detailed Power BI-ready data.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 g-xl-4 pb-5">
+  <div class="col-12">
+    <div class="dash-panel" data-aos="fade-up">
+      <div class="dash-panel-title text-dark">
+        <span>User feedback</span>
+        <span class="badge rounded-pill text-bg-light border">{{ feedback_rows|length }}</span>
+      </div>
+      {% if feedback_rows %}
+      <div class="table-responsive mt-2">
+        <table class="table table-hover table-borderless dash-table mb-0">
+          <thead>
+            <tr><th>Name</th><th>Message</th><th>Rating</th><th>Time</th></tr>
+          </thead>
+          <tbody>
+            {% for row in feedback_rows[:20] %}
+            <tr>
+              <td class="fw-bold">{{ row.name }}</td>
+              <td style="white-space: pre-line;">{{ row.message }}</td>
+              <td>{{ "★" * row.rating }}{{ "☆" * (5 - row.rating) }}</td>
+              <td class="text-muted small">{{ row.created_at.strftime("%d %b %Y %H:%M") }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="dash-empty"><i class="bi bi-chat-square-text"></i><p>No feedback yet.</p></div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 g-xl-4 pb-5">
+  <div class="col-12">
+    <div class="dash-panel" data-aos="fade-up">
+      <div class="dash-panel-title text-dark">
+        <span>Low stock alerts</span>
+      </div>
+      {% if low_stock_alert_rows %}
+      <div class="table-responsive mt-2">
+        <table class="table table-hover table-borderless dash-table mb-0">
+          <thead>
+            <tr><th>Blood group</th><th>Units</th><th>Alert</th></tr>
+          </thead>
+          <tbody>
+            {% for row in low_stock_alert_rows %}
+            <tr>
+              <td class="fw-bold">{{ row.blood_group }}</td>
+              <td>{{ row.units_available }}</td>
+              <td><span class="badge text-bg-danger">Low stock</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="dash-empty"><i class="bi bi-check2-circle"></i><p>No low stock alerts.</p></div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 g-xl-4 mb-4">
+  <div class="col-12">
+    <div class="dash-panel" data-aos="fade-up">
+      <div class="dash-panel-title text-dark">
+        <span>Notifications · all recipients</span>
+        <span class="badge rounded-pill text-bg-secondary bg-opacity-10 border">{{ admin_notification_rows|length }}</span>
+      </div>
+      {% if admin_notification_rows %}
+      <div class="table-responsive mt-2">
+        <table class="table table-hover table-borderless dash-table mb-0">
+          <thead>
+            <tr>
+              <th>When</th>
+              <th>Recipient</th>
+              <th>Role</th>
+              <th>Title</th>
+              <th>Message</th>
+              <th>Flags</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in admin_notification_rows %}
+            {% set msg = row.n.body or '' %}
+            <tr>
+              <td class="text-muted small text-nowrap">{{ row.n.created_at.strftime("%d %b %Y %H:%M") }}</td>
+              <td class="fw-bold">{{ row.recipient_name }}</td>
+              <td><span class="badge rounded-pill text-bg-light border text-muted">{{ row.recipient_role }}</span></td>
+              <td class="fw-semibold">{{ row.n.title }}</td>
+              <td class="small" style="white-space: pre-line; max-width: 28rem;">{{ msg }}</td>
+              <td>
+                {% if 'EMERGENCY CASE' in msg.upper() %}
+                <span class="badge rounded-pill text-bg-danger">EMERGENCY CASE</span>
+                {% else %}
+                <span class="text-muted">—</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if row.n.is_read %}
+                <span class="badge rounded-pill text-bg-light border text-muted">Read</span>
+                {% else %}
+                <span class="badge rounded-pill text-bg-primary">Unread</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="dash-empty"><i class="bi bi-bell-slash"></i><p>No notifications yet.</p></div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 g-xl-4 pb-5">
+  <div class="col-12">
+    <div class="dash-panel" data-aos="fade-up">
+      <div class="dash-panel-title text-dark">
+        <span>Diagnosis reports · all patients</span>
+        <span class="badge rounded-pill text-bg-info bg-opacity-10 border text-primary">{{ diagnosis_dashboard_rows|length }} queued</span>
+      </div>
+      {% if diagnosis_dashboard_rows %}
+      <div class="table-responsive mt-2">
+        <table class="table table-hover table-borderless dash-table mb-0">
+          <thead>
+            <tr><th>Recorded</th><th>Patient</th><th>Assessment</th><th>Score</th><th>Outcome</th></tr>
+          </thead>
+          <tbody>
+            {% for row in diagnosis_dashboard_rows %}
+            {% set rtx = row.rep.result %}
+            <tr>
+              <td class="text-muted small">{{ row.rep.created_at.strftime("%d %b %Y %H:%M") }}</td>
+              <td class="fw-bold">{{ row.patient_name }}</td>
+              <td>{{ row.type_label }}</td>
+              <td class="fw-semibold">{{ row.rep.score }}</td>
+              <td>
+                {% if rtx == 'Likely Pregnant' or 'High Risk' in rtx %}
+                <span class="badge rounded-pill text-bg-danger">{{ rtx }}</span>
+                {% elif 'Medium Risk' in rtx %}
+                <span class="badge rounded-pill text-bg-warning text-dark">{{ rtx }}</span>
+                {% elif 'Low Risk' in rtx %}
+                <span class="badge rounded-pill text-bg-success">{{ rtx }}</span>
+                {% else %}
+                <span class="badge rounded-pill text-bg-light border text-muted">{{ rtx }}</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="dash-empty"><i class="bi bi-collection"></i><p>No diagnosis records yet.</p></div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script type="application/json" id="dashCharts">{{ charts|tojson }}</script>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){ if(window.AOS) AOS.init({duration:720,once:true,offset:40}); });
+</script>
+{% endblock %}

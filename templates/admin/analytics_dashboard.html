@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Analytics Dashboard · ArogyaCare{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+  <div>
+    <h1 class="h3 mb-1">Analytics Dashboard</h1>
+    <p class="text-muted mb-0">Admin view for hospital analytics using live MySQL data.</p>
+  </div>
+  <a class="btn btn-primary" href="{{ url_for('admin.admin_analytics_api_all') }}" target="_blank" rel="noopener">Open Analytics</a>
+</div>
+
+<div class="row g-3 mb-4" id="analyticsCards"></div>
+
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-body">
+        <h2 class="h5 mb-3">Appointments by Department</h2>
+        <canvas id="deptChart" height="220"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-body">
+        <h2 class="h5 mb-3">Blood Stock by Group</h2>
+        <canvas id="bloodChart" height="220"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-12">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+        <h2 class="h5 mb-3">Low Stock Alerts</h2>
+        <div id="lowStockWrap" class="table-responsive"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+<script>
+window.analyticsEndpoint = "{{ url_for('admin.admin_analytics_api_all') }}";
+</script>
+<script src="{{ url_for('static', filename='js/analytics-dashboard.js') }}"></script>
+{% endblock %}

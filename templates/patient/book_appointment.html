@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Book appointment · ArogyaCare{% endblock %}
+{% block body_class %}booking-premium{% endblock %}
+{% block head_extra %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;900&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/airbnb.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/booking.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="book-shell py-4 pb-5" data-presel-doctor="{{ form_doctor_id }}">
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 px-2">
+    <div>
+      <p class="text-uppercase small fw-black text-primary mb-1 letter-spacing-lg">Clinical scheduling</p>
+      <h1 class="fw-black mb-1" style="font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:-.04em;font-size:clamp(1.75rem,3vw,2.35rem);">Book appointment</h1>
+      <p class="text-muted mb-0 fw-semibold">Premium glass pathway · persists to MySQL through SQLAlchemy</p>
+    </div>
+    <a class="btn btn-outline-secondary rounded-pill px-4 fw-bold" href="{{ url_for('patient.patient_dashboard') }}">Patient hub</a>
+  </div>
+
+  <div class="book-hero-cards px-2">
+    <aside class="book-illus mb-4 mb-lg-0">
+      <div class="book-illus-inner">
+        <p class="book-kicker mb-2"><i class="bi bi-stars opacity-75 me-2"></i>Priority telemetry</p>
+        <h2 class="book-illus-title mb-3">Intelligent urgency without shouting.</h2>
+        <p class="book-illus-text mb-4">
+          We derive <strong>P = E + A + B</strong>: <strong>E = +10</strong> if emergency, <strong>A = +5</strong> when your profile date of birth shows age above 60, and <strong>B</strong> lifts sooner appointments (today scores highest within a 14-day horizon).
+          Earlier calendar slots elevate triage stature automatically.
+        </p>
+        {% if current_auth_user and not current_auth_user.date_of_birth %}
+        <p class="small text-info-emphasis border border-info border-opacity-50 rounded-4 px-3 py-2 bg-dark bg-opacity-25">
+          <i class="bi bi-info-circle me-2"></i>Add date of birth in registration (future profile forms) for age-adjusted uplift.
+        </p>
+        {% endif %}
+      </div>
+    </aside>
+
+    <section class="book-form-card">
+      <h3 class="fw-black mb-1" style="font-family:'Plus Jakarta Sans';letter-spacing:-.03em;">Request a slot</h3>
+      <p class="text-muted small fw-semibold mb-4">Select department and clinician · choose date &amp; narrative.</p>
+      <form method="post" action="{{ url_for('book_appointment') }}" autocomplete="off" class="d-grid gap-3">
+        <div>
+          <label class="form-label text-secondary">Department</label>
+          <select class="form-select form-select-lg" id="bookingDepartment" name="department" required>
+            <option value="">Choose department…</option>
+            {% for d in departments %}
+            <option value="{{ d }}" {% if form_department == d %}selected{% endif %}>{{ d }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label class="form-label text-secondary">Doctor</label>
+          <select class="form-select form-select-lg" id="bookingDoctor" name="doctor_id" required>
+            <option value="">Load by department…</option>
+          </select>
+          <small class="text-muted d-block mt-1">Physicians inherit department at registration · only matching profiles appear.</small>
+        </div>
+        <div class="row g-3">
+          <div class="col-md-7">
+            <label class="form-label text-secondary">Date</label>
+            <input type="text" class="form-control form-control-lg" id="appointment_date" name="appointment_date"
+              required placeholder="Select date…" readonly value="{{ form_date }}">
+          </div>
+          <div class="col-md-5">
+            <label class="form-label text-secondary">Time</label>
+            <input type="time" class="form-control form-control-lg" name="appointment_time" required value="{{ form_time }}">
+          </div>
+        </div>
+        <div class="form-floating">
+          <textarea class="form-control rounded-4" placeholder="Describe symptoms…" id="symptoms"
+            name="symptoms" style="min-height:120px">{{ form_symptoms }}</textarea>
+          <label for="symptoms">Symptoms &amp; context</label>
+        </div>
+        <label class="d-flex gap-3 align-items-center px-3 py-3 er-glass fw-semibold text-danger-emphasis">
+          <input class="form-check-input fs-5" type="checkbox" name="emergency" {% if form_emergency %}checked{% endif %}>
+          <span>Emergency corridor (+10 urgency weight)</span>
+        </label>
+        <button type="submit" class="book-submit">Confirm booking</button>
+      </form>
+    </section>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="{{ url_for('static', filename='js/booking.js') }}"></script>
+{% endblock %}

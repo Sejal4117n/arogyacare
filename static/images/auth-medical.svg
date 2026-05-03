@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 620" fill="none" aria-hidden="true">
+  <defs>
+    <linearGradient id="am1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#bae6fd"/>
+      <stop offset="45%" style="stop-color:#a7f3d0"/>
+      <stop offset="100%" style="stop-color:#7dd3fc"/>
+    </linearGradient>
+    <linearGradient id="am2" x1="80%" y1="0%" x2="10%" y2="70%">
+      <stop offset="0%" style="stop-color:rgba(56,189,248,0.35)"/>
+      <stop offset="100%" style="stop-color:rgba(16,185,129,0.15)"/>
+    </linearGradient>
+    <radialGradient id="amg" cx="50%" cy="35%" r="55%">
+      <stop offset="0%" style="stop-color:rgba(241,249,254,0.92)"/>
+      <stop offset="100%" style="stop-color:rgba(224,231,255,0)"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="280" cy="320" rx="240" ry="246" stroke="rgba(148,163,184,0.45)" stroke-width="1"/>
+  <circle cx="280" cy="300" r="168" stroke="url(#am1)" stroke-width="6" opacity="0.55" class="auth-ring-spin"/>
+  <circle cx="280" cy="300" r="196" stroke="url(#am2)" stroke-width="14" opacity="0.35" stroke-dasharray="42 74" class="auth-ring-drift"/>
+  <circle cx="280" cy="300" r="128" fill="url(#amg)"/>
+  <path d="M280 218v148M219 294h126" stroke="url(#am1)" stroke-width="26" stroke-linecap="round" opacity="0.88"/>
+  <path d="M280 260v124M239 294h94" stroke="rgba(248,250,252,0.55)" stroke-width="10" stroke-linecap="round"/>
+  <g opacity="0.75" style="mix-blend-mode:screen">
+    <circle cx="120" cy="140" r="8" fill="#38bdf8" class="auth-node"/>
+    <circle cx="442" cy="186" r="6" fill="#34d399" class="auth-node auth-node-delay"/>
+    <circle cx="148" cy="478" r="7" fill="#22d3ee" class="auth-node auth-node-delay2"/>
+    <circle cx="412" cy="468" r="7" fill="#6ee7b7" class="auth-node-delay"/>
+  </g>
+</svg>
